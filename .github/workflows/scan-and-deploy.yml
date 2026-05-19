@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Set up Python environment
         uses: actions/setup-python@v4
         with:
@@ -33,5 +35,7 @@ jobs:
       - name: Run pip-audit security scan
         run: pipenv run pip-audit
         continue-on-error: true
-      
-      
+      - name: Secret Scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified,unknown
