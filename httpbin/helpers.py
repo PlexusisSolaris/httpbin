@@ -13,7 +13,15 @@ import re
 import time
 import os
 from hashlib import md5, sha256, sha512
-from werkzeug.http import parse_authorization_header
+try:
+    from werkzeug.http import parse_authorization_header
+except ImportError:
+    # Werkzeug 3.0 fallback mapping
+    from werkzeug.datastructures import Authorization
+    def parse_authorization_header(value):
+        if not value:
+            return None
+        return Authorization.from_header(value)
 from werkzeug.datastructures import WWWAuthenticate
 
 from flask import request, make_response
