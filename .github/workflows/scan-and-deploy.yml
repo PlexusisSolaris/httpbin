@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    name: Lint and Test
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - name: Setup pipenv
+        run: pip install pipenv
+      - name: Install dependencies
+        run: pipenv install --dev
+      - name: Lint code
+        run: pipenv run flake8 .
+        continue-on-error: true
+      - name: Run tests
+        run: pipenv run pytest test_httpbin.py
+        continue-on-error: true
+      - name: Run bandit security scan
+        run: pipenv run bandit -r .
+        continue-on-error: true
+      - name: Run pip-audit security scan
+        run: pipenv run pip-audit
+        continue-on-error: true
+      
+      
