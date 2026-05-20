@@ -7,6 +7,8 @@ on:
 
 jobs:
   call-deploy-workflow:
+    permissions:
+      contents: write
     uses: PlexusisSolaris/httpbin-kube-deployment/.github/workflows/deploy.yml@main
     with:
       tag: "latest"
