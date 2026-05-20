@@ -1,0 +1,12 @@
+name: test CD workflow
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  call-deploy-workflow:
+    uses: PlexusisSolaris/httpbin-kube-deployment/.github/workflows/deploy.yml@v1
+    with:
+      tag: "latest"
