@@ -12,3 +12,5 @@ jobs:
     uses: PlexusisSolaris/httpbin-kube-deployment/.github/workflows/deploy.yml@main
     with:
       tag: "latest"
+    secrets:
+      DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
