@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - dev
 
 env:
   REGISTRY: ghcr.io
@@ -112,3 +113,14 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+
+  call-deploy-workflow:
+    needs: build-and-push-image
+    name: Call Deploy Workflow
+    permissions:
+      contents: write
+    uses: PlexusisSolaris/httpbin-kube-deployment/.github/workflows/deploy.yml@main # CHANGE THIS TO YOUR DEPLOYMENT REPO
+    with:
+      tag: ${{ needs.build-and-push-image.outputs.image-tag }}
+    secrets:
+      DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
