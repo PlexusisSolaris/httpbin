@@ -7,6 +7,6 @@ on:
 
 jobs:
   call-deploy-workflow:
-    uses: PlexusisSolaris/httpbin-kube-deployment/.github/workflows/deploy.yml@v1
+    uses: PlexusisSolaris/httpbin-kube-deployment/.github/workflows/deploy.yml@main
     with:
       tag: "latest"
