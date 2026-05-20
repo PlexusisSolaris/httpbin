@@ -29,8 +29,19 @@ from flask import (
 from six.moves import range as xrange
 from werkzeug.datastructures import WWWAuthenticate, MultiDict
 from werkzeug.http import http_date
-from werkzeug.wrappers import BaseResponse
-from werkzeug.http import parse_authorization_header
+try:    
+  from werkzeug.wrappers import BaseResponse
+except ImportError:
+  from werkzeug.wrappers import Response as BaseResponse
+try:
+    from werkzeug.http import parse_authorization_header
+except ImportError:
+    # Werkzeug 3.0 fallback mapping
+    from werkzeug.datastructures import Authorization
+    def parse_authorization_header(value):
+        if not value:
+            return None
+        return Authorization.from_header(value)
 from flasgger import Swagger, NO_SANITIZER
 
 from . import filters

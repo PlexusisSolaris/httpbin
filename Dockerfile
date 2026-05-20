@@ -1,22 +1,24 @@
-FROM ubuntu:18.04
+FROM python:3.14.5-alpine AS builder
 
-LABEL name="httpbin"
-LABEL version="0.9.2"
-LABEL description="A simple HTTP service."
-LABEL org.kennethreitz.vendor="Kenneth Reitz"
+WORKDIR /app
 
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
+COPY Pipfile Pipfile.lock ./
 
-RUN apt update -y && apt install python3-pip git -y && pip3 install --no-cache-dir pipenv
+RUN pip install --no-cache-dir pipenv && pipenv install --deploy --system
 
-ADD Pipfile Pipfile.lock /httpbin/
-WORKDIR /httpbin
-RUN /bin/bash -c "pip3 install --no-cache-dir -r <(pipenv lock -r)"
+FROM python:3.14.5-alpine
 
-ADD . /httpbin
-RUN pip3 install --no-cache-dir /httpbin
+WORKDIR /app
 
-EXPOSE 80
+COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-CMD ["gunicorn", "-b", "0.0.0.0:80", "httpbin:app", "-k", "gevent"]
+COPY httpbin httpbin
+
+RUN addgroup -g 1000 httpbin && adduser -u 1000 -G httpbin -D httpbin && chown -R httpbin:httpbin /app
+
+USER httpbin
+
+EXPOSE 8080
+
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "-k", "gevent", "httpbin:app"]
